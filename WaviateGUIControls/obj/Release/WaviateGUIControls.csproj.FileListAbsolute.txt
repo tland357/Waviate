@@ -1,0 +1,16 @@
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\bin\Release\WaviateGUIControls.dll
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\bin\Release\WaviateGUIControls.pdb
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Release\WaviateGUIControls.csproj.AssemblyReference.cache
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Release\WaviateGUIControls.csproj.GenerateResource.cache
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Release\WaviateGUIControls.csproj.CoreCompileInputs.cache
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Release\WaviateGUIControls.dll
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Release\WaviateGUIControls.pdb
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Release\WaviateGUIControls.Properties.Resources.resources
+D:\Audio-Playground\WaviateGUIControls\bin\Release\WaviateGUIControls.dll
+D:\Audio-Playground\WaviateGUIControls\bin\Release\WaviateGUIControls.pdb
+D:\Audio-Playground\WaviateGUIControls\obj\Release\WaviateGUIControls.csprojAssemblyReference.cache
+D:\Audio-Playground\WaviateGUIControls\obj\Release\WaviateGUIControls.Properties.Resources.resources
+D:\Audio-Playground\WaviateGUIControls\obj\Release\WaviateGUIControls.csproj.GenerateResource.cache
+D:\Audio-Playground\WaviateGUIControls\obj\Release\WaviateGUIControls.csproj.CoreCompileInputs.cache
+D:\Audio-Playground\WaviateGUIControls\obj\Release\WaviateGUIControls.dll
+D:\Audio-Playground\WaviateGUIControls\obj\Release\WaviateGUIControls.pdb

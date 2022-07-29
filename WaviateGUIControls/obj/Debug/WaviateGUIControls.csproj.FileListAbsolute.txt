@@ -1,0 +1,8 @@
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\bin\Debug\WaviateGUIControls.dll
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\bin\Debug\WaviateGUIControls.pdb
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Debug\WaviateGUIControls.csproj.AssemblyReference.cache
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Debug\WaviateGUIControls.csproj.GenerateResource.cache
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Debug\WaviateGUIControls.csproj.CoreCompileInputs.cache
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Debug\WaviateGUIControls.dll
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Debug\WaviateGUIControls.pdb
+D:\Users\ikamo\source\repos\AudioPlayground\WaviateGUIControls\obj\Debug\WaviateGUIControls.Properties.Resources.resources

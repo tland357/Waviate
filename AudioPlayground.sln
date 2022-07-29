@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioPlaygroundConsole", "AudioPlaygroundConsole\AudioPlaygroundConsole.csproj", "{63BF26DE-D2C9-45EE-92B2-BD7ABBDA53E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaviateGUIControls", "WaviateGUIControls\WaviateGUIControls.csproj", "{95938189-A908-4AE3-B4AB-E4221E6C2346}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63BF26DE-D2C9-45EE-92B2-BD7ABBDA53E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63BF26DE-D2C9-45EE-92B2-BD7ABBDA53E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63BF26DE-D2C9-45EE-92B2-BD7ABBDA53E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63BF26DE-D2C9-45EE-92B2-BD7ABBDA53E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95938189-A908-4AE3-B4AB-E4221E6C2346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95938189-A908-4AE3-B4AB-E4221E6C2346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95938189-A908-4AE3-B4AB-E4221E6C2346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95938189-A908-4AE3-B4AB-E4221E6C2346}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA1E659C-1DD6-4B96-8BC2-0266467E01C6}
+	EndGlobalSection
+EndGlobal
