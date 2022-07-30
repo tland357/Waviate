@@ -116,7 +116,7 @@ namespace Waviate.Model.EvolutionAlgo
                             CurrentPopulation.Add(newCreature);
                             if (OnUpdateProgress != null)
                             {
-                                OnUpdateProgress(newCreature, new ProgressChangedEventArgs((int)(100.0 * (1.0 + i + ((childNum + 1)* breedablesLength)) / (breedablesLength *NumberOfChildrenPerCouple)), null));
+                                OnUpdateProgress(newCreature, new ProgressChangedEventArgs((int)(100.0 * (1.0 + i + ((childNum)* breedablesLength)) / (double)(breedablesLength *NumberOfChildrenPerCouple)), null));
                             }
                             index = next;
                         }

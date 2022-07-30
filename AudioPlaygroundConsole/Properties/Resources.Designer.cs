@@ -63,6 +63,16 @@ namespace AudioPlaygroundConsole.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ButtonTint {
+            get {
+                object obj = ResourceManager.GetObject("ButtonTint", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap WaviateLogo {
             get {
                 object obj = ResourceManager.GetObject("WaviateLogo", resourceCulture);

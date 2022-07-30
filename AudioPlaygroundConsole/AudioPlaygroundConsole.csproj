@@ -196,6 +196,7 @@
     <None Include="Pictures\WaviateLogo.gif" />
     <None Include="Resources\WaviateLogo.png" />
     <None Include="Resources\WaviateLogo1.gif" />
+    <None Include="Pictures\ButtonTint.png" />
     <Content Include="Waviate\WaviateLogo.png" />
   </ItemGroup>
   <ItemGroup>

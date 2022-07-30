@@ -338,6 +338,7 @@
 			this.FullscreenOrNot.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
 			this.toolTip1.SetToolTip(this.FullscreenOrNot, "Change the window mode of the application.");
 			this.FullscreenOrNot.UseVisualStyleBackColor = true;
+			this.FullscreenOrNot.Visible = false;
 			this.FullscreenOrNot.CheckedChanged += new System.EventHandler(this.FullscreenOrNot_CheckedChanged);
 			// 
 			// MutatorBackgroundWorker
@@ -368,6 +369,7 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "WaviateApp";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WaviateApp_FormClosing);
+			this.Shown += new System.EventHandler(this.WaviateApp_Shown);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);

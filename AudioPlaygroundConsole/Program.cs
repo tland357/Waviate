@@ -30,18 +30,7 @@ namespace AudioPlaygroundConsole
         static void LaunchWaviate()
         {
             WaviateSplashScreen splash = new WaviateSplashScreen();
-            while (true)
-            {
-                splash.ShowDialog();
-                if (splash.ShouldOpen)
-                {
-                    WaviateApp app = new WaviateApp();
-                    app.ShowDialog();
-                } else
-                {
-                    break;
-                }
-            }
+            Application.Run(splash);
         }
         //static void Main(string[] args)
         //{

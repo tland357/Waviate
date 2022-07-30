@@ -20,8 +20,10 @@ namespace Waviate
     public partial class WaviateApp : Form
     {
         Random pageRand = new Random();
-        public WaviateApp()
+        public WaviateSplashScreen splashRef;
+        public WaviateApp(WaviateSplashScreen splashReference = null)
         {
+            splashRef = splashReference;
             InitializeComponent();
             InitTheme();
             EvolutionAlgorithm.OnSpawnedPopulation += PlaceSoundControllers;
@@ -59,7 +61,8 @@ namespace Waviate
             MutatorSlider.NumberOfDecimalPlaces = 2;
             MutatorSlider.SliderValue = 0.05;
             FullscreenOrNot_CheckedChanged(null, null);
-            CrossBreedActive.Checked = true;
+            CrossBreedActive.Checked = false;
+            BirthRateSlider.Enabled = false;
             NewestGenCheck.Checked = true;
             MutateCheck.Checked = true;
         }
@@ -107,6 +110,7 @@ namespace Waviate
 
         public void NextGenControllers(object Population, EventArgs e)
         {
+            progressBar1.Value = 0;
             int width = splitContainer1.Panel2.Width - 30;
             int height = 300;
             splitContainer1.Panel2.Controls.Clear();
@@ -236,7 +240,7 @@ namespace Waviate
 
         private void TopOfScreen_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            dragging = true;
+            //dragging = true;
             dragCursorPoint = Cursor.Position;
             dragFormPoint = this.Location;
         }
@@ -364,15 +368,15 @@ namespace Waviate
         private void MutatorBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //TODO make progress bar of some kind
-            if (progressBar1.Value == 0 || progressBar1.Value == 100)
-            {
-                splitContainer1.Panel2.Controls.Clear();
-            }
+            //if (progressBar1.Value == 0 || progressBar1.Value == 100)
+            //{
+            //    splitContainer1.Panel2.Controls.Clear();
+            //}
             int percent = e.ProgressPercentage;
             if (percent > 100) percent = 100;
             if (percent < 0) percent = 0;
             progressBar1.Value = percent;
-
+            progressBar1.Update();
             
             
             
@@ -458,6 +462,14 @@ namespace Waviate
         private void WaviateApp_FormClosing(object sender, FormClosingEventArgs e)
         {
             FormOpen = false;
+        }
+
+        private void WaviateApp_Shown(object sender, EventArgs e)
+        {
+            if (splashRef != null)
+            {
+                splashRef.Visible = false;
+            }
         }
 
         private void TimeSet_Paint(object sender, PaintEventArgs e)

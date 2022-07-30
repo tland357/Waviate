@@ -14,9 +14,11 @@ namespace Waviate
     public partial class WaviateSplashScreen : Form
     {
         public bool ShouldOpen;
+        WaviateApp app;
         public WaviateSplashScreen()
         {
             InitializeComponent();
+            app = new WaviateApp();
         }
         public static void ColorToHSV(Color color, out double hue, out double saturation, out double value)
         {
@@ -96,12 +98,11 @@ namespace Waviate
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Close();
+            Application.Exit();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            WaviateApp app = new WaviateApp();
             app.ShowDialog();
         }
     }
