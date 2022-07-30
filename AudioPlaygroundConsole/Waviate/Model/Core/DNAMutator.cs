@@ -13,77 +13,68 @@ namespace Waviate.Model
         {
             EvolutionAlgorithmRandomizer = new Random(seed);
         }
-        public static SoundCreature Mutate(SoundCreature parent, double MutationLimit)
+        public static SoundCreature CrossBreed(SoundCreature a, SoundCreature b)
         {
-            SoundCreature offspring = parent.CreateOffspring(MutationLimit);
+            return a.CreateOffspring(b);
+        }
+        public static void Mutate(SoundCreature offspring, double MutationLimit)
+        {
+            if (MutationLimit < 0) return;
             double mutationCount = 0;
-            for (int i = 0; i < 32 && mutationCount < MutationLimit; i += 1)
+            for (int i = 0; mutationCount < MutationLimit; i += 1)
             {
                 mutationCount += mutes.GetRandomMember()(offspring);
             }
-            return offspring;
+            offspring.MakeDirty();
         }
         delegate double Mutation(SoundCreature target);
         static double ChangeRandomConnector(SoundCreature target)
         {
-            double connectorChangeAmount = 0;
-            int s = target.Size - 1;
-            int randomN = EvolutionAlgorithmRandomizer.Next(0, s);
-            var connector = target.GetNthConnector(randomN, s);
-            if (connector == null) return 0;
-            var par = connector.connectedParent;
-            for (int i = 0; i < par.Children.Count; i++)
-            {
-                if (par.Children[i] == connector)
-                {
-                    var newChild = DNAConnector.GetRandomConnector(connector.connectedChild, par, EvolutionAlgorithmRandomizer.Next(0, DNAConnector.NumberOfModRules));
-                    connectorChangeAmount += newChild.Difference(connector) / s + 10;
-                }
-            }
-            return connectorChangeAmount;
+            var node = target.GetRandomNodeInRange(0, target.Size - 1);
+            var prev = node.Child;
+            var next = DNAConnector.GetRandomConnector();
+            node.Child = next;
+            return next.Difference(prev);
         }
         static double ReplaceNodeWithRandom(SoundCreature target)
         {
-            var randomNode = RandomTreeNodeCreator.CreateRandomNode();
-            var DeletedNode = target.GetRandomNode();
-            if (DeletedNode == null) return 0;
-            var ParentConnector = DeletedNode.Parent;
-            ParentConnector.connectedChild = randomNode;
-            randomNode.Parent = ParentConnector;
-            randomNode.Children = DeletedNode.Children;
-            return Math.Max(randomNode.MuteScore(), DeletedNode.MuteScore());
+            int index = EvolutionAlgorithmRandomizer.Next(0, target.Size);
+            var AddedNode = RandomTreeNodeCreator.CreateRandomNode();
+            var DeletedNode = target[index];
+            AddedNode.Child = DeletedNode.Child;
+            target[index] = AddedNode;
+            return Math.Max(AddedNode.MuteScore(), DeletedNode.MuteScore());
+        }
+        static double RemoveNodeIfPossible(SoundCreature target)
+        {
+            if (target.Size > 1)
+            {
+                int index = EvolutionAlgorithmRandomizer.Next(0, target.Size);
+                DNABase resultNode = target.RemoveNodeAtIndex(index);
+                return resultNode.MuteScore();
+            }
+            return 0;
         }
         public static double AddRandomNode(SoundCreature target)
         {
-            
+            int index = EvolutionAlgorithmRandomizer.Next(0, target.Size + 1);
             var randomNode = RandomTreeNodeCreator.CreateRandomNode();
-            var leaf = target.GetRandomNode();
-            if (leaf == null) return 0;
-            var conn = DNAConnector.GetRandomConnector(randomNode, leaf);
-            leaf.Children.Add(conn);
+            target.AddNodeAtIndex(index, randomNode);
             return randomNode.MuteScore();
         }
         static double MutateRandomNode(SoundCreature target)
         {
-            var rNode = target.GetRandomNode();
+            var rNode = target.GetRandomNodeInRange();
             if (rNode == null) return 0;
             return rNode.Mutate(.5);
         }
         static Mutation[] mutes = new Mutation[]
         {
             ChangeRandomConnector,
-            ChangeRandomConnector,
-            ChangeRandomConnector,
-            MutateRandomNode,
-            MutateRandomNode,
-            MutateRandomNode,
-            MutateRandomNode,
-            MutateRandomNode,
             MutateRandomNode,
             AddRandomNode,
-            AddRandomNode,
-            AddRandomNode,
-            AddRandomNode,
+            ReplaceNodeWithRandom,
+            RemoveNodeIfPossible,
         };
     }
 }

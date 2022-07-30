@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Waviate.GUI;
@@ -18,6 +19,7 @@ namespace Waviate
 {
     public partial class WaviateApp : Form
     {
+        Random pageRand = new Random();
         public WaviateApp()
         {
             InitializeComponent();
@@ -28,20 +30,20 @@ namespace Waviate
             MutatorBackgroundWorker.RunWorkerCompleted += NextGenControllers;
             EvolutionAlgorithm.OnUpdateProgress += (sender, args) =>
             {
+                addedCreature = sender as SoundCreature;
                 MutatorBackgroundWorker.ReportProgress(args.ProgressPercentage);
             };
-                
+
+            RendererBackgroundWorker.RunWorkerAsync();
         }
+        SoundCreature addedCreature;
         public void InitTheme()
         {
             splitContainer1.Panel2.BackColor = WaviateColors.WavMidnight;
             splitContainer1.Panel1.BackColor = WaviateColors.WavDarkPurp;
             EvolveStart.BackColor = WaviateColors.WavPink;
-            NumberOfSounds.SliderMin = 6;
-            NumberOfSounds.SliderMax = 48;
-            NumberOfSounds.SliderValue = 16;
-            NumberOfSounds.NumberOfDecimalPlaces = 0;
-            NumberOfSounds.Label = "Number of Sounds";
+            NumberOfSounds.SliderMin = 3;
+            
             Timesetter.SliderMin = 0.1;
             Timesetter.SliderMax = 5.0;
             Timesetter.SliderValue = 1.0;
@@ -51,12 +53,15 @@ namespace Waviate
             Seeder.SliderMax = 256;
             Seeder.Label = "Seed";
             Seeder.NumberOfDecimalPlaces = 0;
-            Seeder.SliderValue = 128;
+            Seeder.SliderValue = pageRand.Next(0, 256);
             MutatorSlider.SliderMin = 0.01;
             MutatorSlider.SliderMax = 1;
             MutatorSlider.NumberOfDecimalPlaces = 2;
+            MutatorSlider.SliderValue = 0.05;
             FullscreenOrNot_CheckedChanged(null, null);
-            
+            CrossBreedActive.Checked = true;
+            NewestGenCheck.Checked = true;
+            MutateCheck.Checked = true;
         }
 
         [DllImport("user32.dll")]
@@ -81,8 +86,8 @@ namespace Waviate
         const int RatioHeightToWidth = 8;
         public void PlaceSoundControllers(object Population, EventArgs e)
         {
-            int width = splitContainer1.Panel2.Width;
-            int height = 250;
+            int width = splitContainer1.Panel2.Width - 30;
+            int height = 300;
             List<SoundCreature> populus = Population as List<SoundCreature>;
             if (populus != null)
             {
@@ -94,17 +99,16 @@ namespace Waviate
                         Height = height,
                         Location = new Point(0, i * height),
                         SoundCreator = populus[i],
-
                     });
                 }
             }
             EvolveStart.Text = "Next Gen";
         }
 
-        void NextGenControllers(object Population, EventArgs e)
+        public void NextGenControllers(object Population, EventArgs e)
         {
-            int width = splitContainer1.Panel2.Width;
-            int height = 250;
+            int width = splitContainer1.Panel2.Width - 30;
+            int height = 300;
             splitContainer1.Panel2.Controls.Clear();
             List<SoundCreature> populus = EvolutionAlgorithm.CurrentPopulation;
             if (populus != null)
@@ -117,7 +121,6 @@ namespace Waviate
                         Height = height,
                         Location = new Point(0, i * height),
                         SoundCreator = populus[i],
-
                     });
                 }
             }
@@ -126,13 +129,16 @@ namespace Waviate
         {
             splitContainer1.Panel2.Controls.Clear();
             EvolveStart.Text = "Start";
+            Seeder.Enabled = NumberOfSounds.Enabled = true;
+            StartOver.Enabled = false;
+            StartOver.BackColor = WaviateColors.WavDarkPurp;
         }
 
 
         private void splitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
         {
-            int height = 250;
-            int width = splitContainer1.Panel2.Width;
+            int height = 300;
+            int width = splitContainer1.Panel2.Width - 30;
             int i = 0;
             foreach (IndividualSoundController cont in splitContainer1.Panel2.Controls)
             {
@@ -141,7 +147,7 @@ namespace Waviate
                 cont.Location = new Point(0, height * i++);
             }
         }
-
+        bool Repaint = true;
         private void splitContainer1_Panel2_Scroll(object sender, ScrollEventArgs e)
         {
             foreach (IndividualSoundController cont in splitContainer1.Panel2.Controls)
@@ -160,7 +166,7 @@ namespace Waviate
 
         private void splitContainer1_Resize(object sender, EventArgs e)
         {
-            splitContainer1.SplitterDistance = 260;
+            splitContainer1.SplitterDistance = 300;
             splitTopFromBottom.SplitterDistance = 50;
             EscapeApp.Location = new Point(splitTopFromBottom.Panel1.Right - EscapeApp.Width, 0);
             FullscreenOrNot.Location = new Point(splitTopFromBottom.Panel1.Right - EscapeApp.Width - FullscreenOrNot.Width, 0);
@@ -171,6 +177,10 @@ namespace Waviate
             Timesetter.Location = new Point((splitContainer1.SplitterDistance - Timesetter.Width) / 2, splitContainer1.Panel1.Height - EvolveStart.Height - StartOver.Height - NumberOfSounds.Height - Timesetter.Height - 20);
             Seeder.Location = new Point((splitContainer1.SplitterDistance - Seeder.Width) / 2, splitContainer1.Panel1.Height - EvolveStart.Height - StartOver.Height - NumberOfSounds.Height - Timesetter.Height - Seeder.Height - 25);
             MutatorSlider.Location = new Point((splitContainer1.SplitterDistance - MutatorSlider.Width) / 2, splitContainer1.Panel1.Height - EvolveStart.Height - StartOver.Height - NumberOfSounds.Height - Timesetter.Height - Seeder.Height - MutatorSlider.Height - 30);
+            MutateCheck.Location = new Point((splitContainer1.SplitterDistance - MutateCheck.Width) / 2, MutatorSlider.Top - MutateCheck.Height - 5);
+            NewestGenCheck.Location = new Point((splitContainer1.SplitterDistance - NewestGenCheck.Width) / 2, MutateCheck.Top - NewestGenCheck.Height - 5);
+            CrossBreedActive.Location = new Point((splitContainer1.SplitterDistance - CrossBreedActive.Width) / 2, NewestGenCheck.Top - CrossBreedActive.Height - 5);
+            BirthRateSlider.Location = new Point((splitContainer1.SplitterDistance - BirthRateSlider.Width) / 2, CrossBreedActive.Top - BirthRateSlider.Height - 5);
         }
 
         private void EvolveStart_Click(object sender, EventArgs e)
@@ -180,19 +190,20 @@ namespace Waviate
             if (!EvolutionAlgorithm.Started)
             {
                 EvolutionAlgorithm.Start((int)NumberOfSounds.SliderValue, (int)Seeder.SliderValue);
+                Seeder.Enabled = NumberOfSounds.Enabled = false;
+                StartOver.Enabled = true;
+                StartOver.BackColor = WaviateColors.WavPink;
             } else
             {
                 
                 MutatorBackgroundWorker.RunWorkerAsync();
-                splitContainer1.Panel2.Controls.Clear();
             }
-            
         }
 
         private void EscapeApp_Click(object sender, EventArgs e)
         {
             (sender as CheckBox).Checked = false;
-            Application.Exit();
+            Close();
         }
 
         private void FullscreenOrNot_CheckedChanged(object sender, EventArgs e)
@@ -337,28 +348,116 @@ namespace Waviate
         private void MutatorBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             int i = 0;
-            List<int> survivingIndices = new List<int>();
+            List<int> killedIndices = new List<int>();
             foreach (Control controller in splitContainer1.Panel2.Controls)
             {
                 var cont = controller as IndividualSoundController;
-                if (cont != null && cont.KillSave.Checked)
+                if (cont != null && !cont.KillSave.Checked)
                 {
-                    survivingIndices.Add(i);
+                    killedIndices.Add(i);
                 }
                 i += 1;
             }
-            EvolutionAlgorithm.NextGeneration(survivingIndices, (int)NumberOfSounds.SliderValue, MutatorSlider.SliderValue);
+            EvolutionAlgorithm.NextGeneration(killedIndices, (int)NumberOfSounds.SliderValue, MutatorSlider.SliderValue);
         }
 
         private void MutatorBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //TODO make progress bar of some kind
-            progressBar1.Value = e.ProgressPercentage;
+            if (progressBar1.Value == 0 || progressBar1.Value == 100)
+            {
+                splitContainer1.Panel2.Controls.Clear();
+            }
+            int percent = e.ProgressPercentage;
+            if (percent > 100) percent = 100;
+            if (percent < 0) percent = 0;
+            progressBar1.Value = percent;
+
+            
+            
+            
         }
 
         private void MutatorSlider_SliderValueChanged(object sender, AudioPlaygroundConsole.Waviate.GUI.Slider.SliderEventArgs e)
         {
 
+        }
+
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            var sen = sender as CheckBox;
+            if (sen != null)
+            {
+                sen.BackColor = sen.Checked ? WaviateColors.WavPink : WaviateColors.WavMidnight;
+                sen.Text = sen.Checked ? "Mutates" : "No Mutation";
+                if (!sen.Checked && !CrossBreedActive.Checked)
+                {
+                    CrossBreedActive.Checked = true;
+                }
+                MutatorSlider.Enabled = sen.Checked;
+                EvolutionAlgorithm.Mutates = sen.Checked;
+            }
+        }
+
+        int storedBirthRate = 1;
+        private void CrossBreedActive_CheckedChanged(object sender, EventArgs e)
+        {
+            var sen = sender as CheckBox;
+            if (sen != null)
+            {
+                sen.BackColor = sen.Checked ? WaviateColors.WavPink : WaviateColors.WavMidnight;
+                sen.Text = sen.Checked ? "Cross Breeds" : "No Cross Breed";
+                if (!sen.Checked && !MutateCheck.Checked)
+                {
+                    MutateCheck.Checked = true;
+                }
+                if (!sen.Checked)
+                {
+                    storedBirthRate = (int)BirthRateSlider.SliderValue;
+                    BirthRateSlider.SliderValue = 1;
+                    BirthRateSlider.Enabled = false;
+                } else
+                {
+                    BirthRateSlider.SliderValue = storedBirthRate;
+                    BirthRateSlider.Enabled = true;
+                }
+                EvolutionAlgorithm.Breeds = sen.Checked;
+            }
+        }
+
+        private void NewestGenCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            var sen = sender as CheckBox;
+            if (sen != null)
+            {
+                sen.BackColor = sen.Checked ? WaviateColors.WavPink : WaviateColors.WavMidnight;
+                sen.Text = sen.Checked ? "Newest Gen Only" : "All Generations";
+                EvolutionAlgorithm.OnlyRecentGeneration = sen.Checked;
+            }
+        }
+        bool FormOpen = true;
+        private void RendererBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (FormOpen)
+            {
+                foreach (Control control in splitContainer1.Panel2.Controls)
+                {
+                    var controller = control as IndividualSoundController;
+                    controller.Repaint();
+                    Thread.Sleep(25);
+                }
+            }
+        }
+
+        private void BirthRateSlider_SliderValueChanged(object sender, AudioPlaygroundConsole.Waviate.GUI.Slider.SliderEventArgs e)
+        {
+            //storedBirthRate = (int)e.newValue;
+        }
+
+        private void WaviateApp_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            FormOpen = false;
         }
 
         private void TimeSet_Paint(object sender, PaintEventArgs e)

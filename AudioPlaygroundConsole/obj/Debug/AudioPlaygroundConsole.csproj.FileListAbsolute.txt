@@ -59,3 +59,13 @@ D:\Users\ikamo\source\repos\AudioPlayground\AudioPlaygroundConsole\bin\Debug\Wav
 D:\Users\ikamo\source\repos\AudioPlayground\AudioPlaygroundConsole\obj\Debug\Waviate.GUI.IndividualSoundController.resources
 D:\Users\ikamo\source\repos\AudioPlayground\AudioPlaygroundConsole\obj\Debug\Waviate.GUI.WaveViewer.resources
 D:\Users\ikamo\source\repos\AudioPlayground\AudioPlaygroundConsole\obj\Debug\AudioPlaygroundConsole.Waviate.GUI.Slider.resources
+D:\Audio-Playground\AudioPlaygroundConsole\bin\Debug\WaviateGUIControls.dll
+D:\Audio-Playground\AudioPlaygroundConsole\bin\Debug\WaviateGUIControls.pdb
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\AudioVisualizerDisplay.resources
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\AudioPlaygroundConsole.Properties.Resources.resources
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\Waviate.GUI.IndividualSoundController.resources
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\AudioPlaygroundConsole.Waviate.GUI.Slider.resources
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\Waviate.GUI.WaveViewer.resources
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\Waviate.WaviateApp.resources
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\Waviate.WaviateSplashScreen.resources
+D:\Audio-Playground\AudioPlaygroundConsole\obj\Debug\AudioPlaygroundConsole.csproj.GenerateResource.cache

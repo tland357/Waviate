@@ -66,7 +66,7 @@ namespace Waviate.Model.EvolutionAlgo
                 {
                     foreach (int survivorindex in Survivors)
                     {
-                        yield return CurrentPopulation[survivorindex].CreateOffspring(MutationAllowance);
+                        yield return null;// CurrentPopulation[survivorindex].CreateOffspring(MutationAllowance);
                     }
                 }
             }
@@ -74,24 +74,76 @@ namespace Waviate.Model.EvolutionAlgo
         }
         public delegate void ProgressEventHandler(object sender, ProgressChangedEventArgs e);
         public static event ProgressEventHandler OnUpdateProgress;
-        public static void NextGeneration(IList<int> Survivors, int AmountInNextGeneration, double MutationAllowance)
+        public static event EventHandler OnStartGeneratingChildren;
+        public static bool Breeds;
+        public static bool OnlyRecentGeneration;
+        public static bool Mutates;
+        public static int NumberOfChildrenPerCouple = 1;
+        public static void NextGeneration(List<int> Kills, int AmountInNextGeneration, double MutationAllowance)
         {
-            if (Survivors.Count > 0 && AmountInNextGeneration > 0 && Survivors.Count <= AmountInNextGeneration)
+            OnStartGeneratingChildren?.Invoke(null, null);
+            if (Kills.Count < CurrentPopulation.Count && AmountInNextGeneration > 0)
             {
-                List<SoundCreature> list = new List<SoundCreature>();
-                for (int i = 0; i < AmountInNextGeneration; i += 1)
+                int killIndexShift = -1;
+                Kills.Sort();
+                foreach (var kill in Kills)
                 {
-                    int index = Survivors[i % Survivors.Count];
-                    var newCreature = DNAMutator.Mutate(CurrentPopulation[index], MutationAllowance);
-                    list.Add(newCreature);
-                    if (OnUpdateProgress != null)
+                    CurrentPopulation.RemoveAt(kill - ++killIndexShift);
+                }
+                int MostRecentGen = CurrentPopulation.Select(x => x.Lifetime).Min();
+                List<SoundCreature> breedables;
+                if (OnlyRecentGeneration)
+                {
+                    breedables = CurrentPopulation.Where(c => c.Lifetime == MostRecentGen).ToList();
+                }
+                else if (Breeds)
+                {
+                    breedables = CurrentPopulation;
+                } else
+                {
+                    breedables = CurrentPopulation.Copy();
+                }
+                int breedablesLength = breedables.Count;
+                if (Breeds)
+                {
+                    int index = 0;
+                    for (int childNum = 0; childNum < NumberOfChildrenPerCouple; childNum += 1)
                     {
-                        OnUpdateProgress(newCreature, new ProgressChangedEventArgs((int)((double)100 * (i + 1) / AmountInNextGeneration), null));
+                        for (int i = 0; i < breedablesLength; i += 1) { 
+                            int next = (index + 1) % breedablesLength;
+                            var newCreature = DNAMutator.CrossBreed(breedables[index], breedables[next]);
+                            DNAMutator.Mutate(newCreature, Mutates ? MutationAllowance : -1);
+                            CurrentPopulation.Add(newCreature);
+                            if (OnUpdateProgress != null)
+                            {
+                                OnUpdateProgress(newCreature, new ProgressChangedEventArgs((int)(100.0 * (1.0 + i + ((childNum + 1)* breedablesLength)) / (breedablesLength *NumberOfChildrenPerCouple)), null));
+                            }
+                            index = next;
+                        }
+                    }
+                } 
+                else
+                {
+                    int i = 0;
+                    foreach (SoundCreature creature in breedables)
+                    {
+                        var newCreature = creature.CreateOffspring();
+                        DNAMutator.Mutate(newCreature, MutationAllowance);
+                        CurrentPopulation.Add(newCreature);
+                        if (OnUpdateProgress != null)
+                        {
+                            OnUpdateProgress(newCreature, new ProgressChangedEventArgs((int)(100.0 * ((double)++i / (double)breedablesLength)), null));
+                        }
                     }
                 }
+                
+                CurrentPopulation.Sort((c1, c2) =>
+                {
+                    return c1.Lifetime - c2.Lifetime;
+                });
                 if (OnNextGenPopulation != null)
                 {
-                    OnNextGenPopulation(list, null);
+                    OnNextGenPopulation(CurrentPopulation, null);
                 }
             }
         }

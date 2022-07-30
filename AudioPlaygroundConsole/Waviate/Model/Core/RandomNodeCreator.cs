@@ -8,7 +8,7 @@ using Waviate.Model.SpecificNodes;
 
 public static class RandomTreeNodeCreator
 {
-    public static DNATreeNodeBase CreateRandomNode()
+    public static DNABase CreateRandomNode()
     {
         int type = DNAMutator.EvolutionAlgorithmRandomizer.Next();
         PolynomialNode poly;

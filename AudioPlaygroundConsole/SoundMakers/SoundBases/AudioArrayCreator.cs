@@ -18,7 +18,7 @@ namespace AudioPlaygroundConsole
         {
             calculatedAudio = null;
             AudioCalculated = false;
-            OnDirtied(this, null);
+            OnDirtied?.Invoke(this, null);
         }
         public event EventHandler OnDirtied;
         public IList<double> Audio()

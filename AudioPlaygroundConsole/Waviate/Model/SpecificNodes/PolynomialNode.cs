@@ -7,7 +7,7 @@ using Waviate.Model;
 
 namespace Waviate.Model.SpecificNodes
 {
-    class PolynomialNode : DNATreeNodeBase
+    class PolynomialNode : DNABase
     {
         public List<double> Polynomial = new List<double>();
 

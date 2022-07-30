@@ -13,9 +13,17 @@ namespace AudioPlaygroundConsole.Waviate.GUI
     public partial class Slider : UserControl
     {
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), DefaultValue(0), Category("Data"),]
-        public double SliderMin = 0.0;
+        public double SliderMin
+        {
+            get;
+            set;
+        }
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), DefaultValue(1), Category("Data"),]
-        public double SliderMax = 100.0;
+        public double SliderMax
+        {
+            get;
+            set;
+        }
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), DefaultValue("None"), Category("Data"),]
         public string Label
         {
@@ -94,8 +102,12 @@ namespace AudioPlaygroundConsole.Waviate.GUI
             MouseDrag = true;
             label2_MouseMove(sender, e);
         }
-
-        public int NumberOfDecimalPlaces = 0;
+        [Browsable(true), EditorBrowsable(EditorBrowsableState.Always), DefaultValue(0), Category("Data"),]
+        public int NumberOfDecimalPlaces
+        {
+            get;
+            set;
+        }
         int FindCharInString(string s, char c)
         {
             for (int i = 0; i < s.Length; i += 1)
@@ -133,7 +145,7 @@ namespace AudioPlaygroundConsole.Waviate.GUI
         private void label2_MouseMove(object sender, MouseEventArgs e)
         {
             var bar = sender as Control;
-            if (MouseDrag && bar != null)
+            if (MouseDrag && bar != null && this.Enabled)
             {
                 Ratio = (double)e.Location.X / bar.Width;
                 label2.Text = SliderValue.ToString();
@@ -156,6 +168,11 @@ namespace AudioPlaygroundConsole.Waviate.GUI
         private void Slider_Resize(object sender, EventArgs e)
         {
             label2.Location = new Point((panel1.Width - label2.Width) / 2, panel1.Height - label2.Height);
+        }
+
+        private void Slider_EnabledChanged(object sender, EventArgs e)
+        {
+            label1.ForeColor = Enabled ? Color.White : Color.Black;
         }
     }
 }

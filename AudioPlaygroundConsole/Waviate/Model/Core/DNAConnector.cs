@@ -8,16 +8,12 @@ namespace Waviate.Model
 {
     public class DNAConnector
     {
-        public DNAConnector copy(DNATreeNodeBase newParent)
+        public DNAConnector copy()
         {
-            DNAConnector clone = (DNAConnector) MemberwiseClone();
-            var child = clone.connectedChild.DeepCopy(this);
-            clone.connectedChild = child;
-            clone.connectedParent = newParent;
-            return clone;
+            return (DNAConnector) MemberwiseClone();
         }
         public const int NumberOfModRules = 4;
-        public static DNAConnector GetRandomConnector(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule = -1)
+        public static DNAConnector GetRandomConnector(int modRule = -1)
         {
             int i = DNAMutator.EvolutionAlgorithmRandomizer.Next(0, 8);
             if (modRule == -1)
@@ -27,37 +23,30 @@ namespace Waviate.Model
             switch (i)
             {
                 case 1:
-                    return new DNAConnectorEvenSlice(child, parent, modRule);
+                    return new DNAConnectorEvenSlice(modRule);
                 case 2:
-                    return new DNAConnectorAvg(child, parent, modRule);
+                    return new DNAConnectorAvg(modRule);
                 case 3:
-                    return new DNAConnectorTan(child, parent, modRule);
+                    return new DNAConnectorTan(modRule);
                 case 4:
-                    return new DNAConnectorSin(child, parent, modRule);
+                    return new DNAConnectorSin(modRule);
                 case 5:
-                    return new DNAConnectorDiv(child, parent, modRule);
+                    return new DNAConnectorDiv(modRule);
                 case 6:
-                    return new DNAConnectorMult(child, parent, modRule);
+                    return new DNAConnectorMult(modRule);
                 case 7:
-                    return new DNAConnectorSubtract(child, parent, modRule);
+                    return new DNAConnectorSubtract(modRule);
             }
-            return new DNAConnector(child, parent, modRule);
+            return new DNAConnector(modRule);
         }
-        public DNAConnector(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule = 0)
+        public DNAConnector(int modRule = 0)
         {
-            child.Parent = this;
-            connectedChild = child;
             ModRule = modRule;
         }
-        public DNATreeNodeBase connectedParent;
-        public DNATreeNodeBase connectedChild {
-            get; 
-            set;
-        }
         int ModRule = 0;
-        public double Evaluate(double parentOutput, int sample, double duration)
+        public double Evaluate(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            double result = EvaluateConnection(parentOutput, sample, duration);
+            double result = EvaluateConnection(parentOutput, ChildOutput, sample, duration);
             switch (ModRule)
             {
                 case 1:
@@ -70,9 +59,10 @@ namespace Waviate.Model
                     return result % 1.0;
             }
         }
-        virtual protected double EvaluateConnection(double parentOutput, int sample, double duration)
+        virtual protected double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            return parentOutput + connectedChild.Evaluate(sample, duration);
+            
+            return parentOutput + ChildOutput;
         }
         public virtual int ClassOrder() { return 0; }
         public double Difference(DNAConnector other)
@@ -114,10 +104,11 @@ namespace Waviate.Model
 
     public class DNAConnectorSubtract : DNAConnector
     {
-        public DNAConnectorSubtract(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule) : base(child, parent, modRule) { }
-        protected override double EvaluateConnection(double parentOutput, int sample, double duration)
+        public DNAConnectorSubtract(int modRule) : base(modRule) { }
+        protected override double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            return parentOutput - connectedChild.Evaluate(sample, duration);
+            
+            return parentOutput - ChildOutput;
         }
         public override int ClassOrder() { return 1; }
         public override double Diff(DNAConnector other)
@@ -128,10 +119,11 @@ namespace Waviate.Model
 
     public class DNAConnectorMult : DNAConnector
     {
-        public DNAConnectorMult(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule) : base(child, parent, modRule) { }
-        protected override double EvaluateConnection(double parentOutput, int sample, double duration)
+        public DNAConnectorMult(int modRule) : base(modRule) { }
+        protected override double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            return parentOutput * connectedChild.Evaluate(sample, duration);
+            
+            return parentOutput * ChildOutput;
         }
         public override int ClassOrder() { return 2; }
         public override double Diff(DNAConnector other)
@@ -155,10 +147,11 @@ namespace Waviate.Model
 
     public class DNAConnectorDiv : DNAConnector
     {
-        public DNAConnectorDiv(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule) : base(child, parent, modRule) { }
-        protected override double EvaluateConnection(double parentOutput, int sample, double duration)
+        public DNAConnectorDiv(int modRule) : base(modRule) { }
+        protected override double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            return IkaStaticMath.Clamp(parentOutput / connectedChild.Evaluate(sample, duration), -1000000, 1000000);
+            
+            return IkaStaticMath.Clamp(parentOutput / ChildOutput, -1000000, 1000000);
         }
         public override int ClassOrder() { return 3; }
         public override double Diff(DNAConnector other)
@@ -179,10 +172,11 @@ namespace Waviate.Model
     }
     public class DNAConnectorSin : DNAConnector
     {
-        public DNAConnectorSin(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule) : base(child, parent, modRule) { }
-        protected override double EvaluateConnection(double parentOutput, int sample, double duration)
+        public DNAConnectorSin(int modRule) : base(modRule) { }
+        protected override double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            return parentOutput * Math.Sin(connectedChild.Evaluate(sample, duration));
+            
+            return parentOutput * Math.Sin(ChildOutput);
         }
         public override int ClassOrder() { return 4; }
         public override double Diff(DNAConnector other)
@@ -202,10 +196,11 @@ namespace Waviate.Model
 
     public class DNAConnectorTan : DNAConnector
     {
-        public DNAConnectorTan(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule) : base(child, parent, modRule) { }
-        protected override double EvaluateConnection(double parentOutput, int sample, double duration)
+        public DNAConnectorTan(int modRule) : base(modRule) { }
+        protected override double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            return IkaStaticMath.Clamp(Math.Tan(connectedChild.Evaluate(sample, duration) + parentOutput),-1000000,1000000);
+            
+            return IkaStaticMath.Clamp(Math.Tan(ChildOutput + parentOutput),-1000000,1000000);
         }
         public override int ClassOrder() { return 5; }
         public override double Diff(DNAConnector other)
@@ -223,10 +218,11 @@ namespace Waviate.Model
 
     public class DNAConnectorAvg : DNAConnector
     {
-        public DNAConnectorAvg(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule) : base(child, parent, modRule) { }
-        protected override double EvaluateConnection(double parentOutput, int sample, double duration)
+        public DNAConnectorAvg(int modRule) : base(modRule) { }
+        protected override double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
-            return parentOutput * connectedChild.Evaluate(sample, duration);
+            
+            return parentOutput * ChildOutput;
         }
         public override int ClassOrder() { return 6; }
         public override double Diff(DNAConnector other)
@@ -242,14 +238,16 @@ namespace Waviate.Model
 
     public class DNAConnectorEvenSlice : DNAConnector
     {
-        public DNAConnectorEvenSlice(DNATreeNodeBase child, DNATreeNodeBase parent, int modRule) : base(child, parent, modRule) { }
-        protected override double EvaluateConnection(double parentOutput, int sample, double duration)
+        public DNAConnectorEvenSlice(int modRule) : base(modRule) { }
+        protected override double EvaluateConnection(double parentOutput, double ChildOutput, int sample, double duration)
         {
             if (sample % 2 == 0)
             {
                 return parentOutput;
+            } else
+            {
+                return ChildOutput;
             }
-            return connectedChild.Evaluate(sample, duration);
         }
         public override int ClassOrder() { return 7; }
         public override double Diff(DNAConnector other)

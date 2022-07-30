@@ -10,17 +10,73 @@ namespace Waviate.Model
     {
         public SoundCreature()
         {
-            TreeRoot = RandomTreeNodeCreator.CreateRandomNode();
-            int add = DNAMutator.EvolutionAlgorithmRandomizer.Next(3, 8);
-            for (int i = 0; i < add; i++)
+            Lifetime = 0;
+            DNA = new List<DNABase>();
+            int dnaLength = DNAMutator.EvolutionAlgorithmRandomizer.Next(3, 30);
+
+            for (int i = 0; i < dnaLength; i++)
             {
-                DNAMutator.AddRandomNode(this);
+                DNA.Add(RandomTreeNodeCreator.CreateRandomNode());
+            }
+            EvolutionAlgo.EvolutionAlgorithm.OnStartGeneratingChildren += (x, y) =>
+            {
+                Lifetime += 1;
+            };
+            FirstName = Syllable.RandomName(true);
+            LastName = Syllable.RandomName(false);
+        }
+        List<DNABase> DNA;
+        int life;
+        public delegate void CreatureData(SoundCreature creature);
+        public event CreatureData OnLifetimeChanged;
+        public string FirstName;
+        public string LastName;
+        public int Lifetime
+        {
+            get => life;
+            set
+            {
+                life = value;
+                OnLifetimeChanged?.Invoke(this);
             }
         }
-        public SoundCreature CreateOffspring(double MutationAllowance)
+        public SoundCreature CreateOffspring(SoundCreature partner = null, double MutationAllowance = -1)
         {
-            SoundCreature creature = (SoundCreature)MemberwiseClone();
-            creature.TreeRoot = TreeRoot.DeepCopy();
+            SoundCreature creature = new SoundCreature();
+            creature.life = 0;
+            creature.DNA = DNA.CopyCreatures();
+            creature.LastName = this.LastName;
+            if (partner == null)
+            {
+                creature.FirstName = Syllable.RandomName();
+            } else
+            {
+                creature.FirstName = partner.FirstName;
+                if (creature.FirstName[0].IsAnyOf('a', 'e', 'i', 'o', 'u'))
+                {
+                    if (DNAMutator.EvolutionAlgorithmRandomizer.Next() % 2 == 0)
+                    {
+                        creature.FirstName = creature.FirstName.TrimStart('a', 'e', 'i', 'o', 'u');
+                    }
+                    else
+                    {
+                        creature.FirstName = Syllable.consonants.GetRandomMember() + creature.FirstName;
+                    }
+                }
+                else
+                {
+                    if (DNAMutator.EvolutionAlgorithmRandomizer.Next() % 2 == 0)
+                    {
+                        creature.FirstName = creature.FirstName + Syllable.vowels.GetRandomMember(0, 5) + Syllable.endings.GetRandomMember();
+                    }
+                    else
+                    {
+                        creature.FirstName = Syllable.vowels.GetRandomMember() + creature.FirstName;
+                    }
+                }
+                creature.DNA.AddRange(partner.DNA.CopyCreatures());
+            }
+            
             return creature;
         }
         public SoundCreature(SoundCreature parent)
@@ -29,9 +85,9 @@ namespace Waviate.Model
         }
         public int Size
         {
-            get { return TreeRoot?.Size ?? 0; }
+            get { return DNA.Count; }
         }
-        DNATreeNodeBase TreeRoot;
+
         protected double SecondsLength()
         {
             return EvolutionAlgo.EvolutionAlgorithm.TimeLength;
@@ -44,7 +100,18 @@ namespace Waviate.Model
             Parallel.For(0, totalSamples, i =>
             {
                 double duration = (double)i / totalSamples;
-                result[i] = TreeRoot.Evaluate(i, duration) * EvolutionAlgo.EvolutionAlgorithm.Volume;
+                double? res = null;
+                if (DNA != null && DNA.Count > 0)
+                {
+                    for (int j = DNA.Count - 1; j >= 0; j -= 1)
+                    {
+                        res = DNA[j].Evaluate(res, i, duration);
+                    }
+                } else
+                {
+                    res = 0;
+                }
+                result[i] = res.Value * EvolutionAlgo.EvolutionAlgorithm.Volume;
             });
             //for (int i = 0; i < totalSamples; i++)
             //{
@@ -53,93 +120,46 @@ namespace Waviate.Model
             //}
             return result;
         }
-        public DNATreeNodeBase GetNthNode(int n, int knownSize = -1)
-        {
-            int curr = 0;
-            DNATreeNodeBase node = TreeRoot;
-            int size = knownSize;
-            if (knownSize == -1) size = Size;
-            if (n >= size) n = size - 1;
-            if (n < 0) n = 0;
-            return getNthNode(n, node, ref curr);
-        }
-
-        DNATreeNodeBase getNthNode(int n, DNATreeNodeBase node, ref int curr)
-        {
-            if (n == curr) return node;
-            curr += 1;
-            for (int i = 0; i < node.Children.Count; i += 1)
-            {
-                DNATreeNodeBase child = node.Children[i].connectedChild;
-                var next = getNthNode(n, child, ref curr);
-                if (next != null)
-                {
-                    return next;
-                }
-            }
-            return null;
-        }
-
-        public DNAConnector GetNthConnector(int n, int knownSize = -1)
-        {
-            int curr = 0;
-            DNATreeNodeBase node = TreeRoot;
-            int size = knownSize;
-            if (knownSize == -1) size = Size;
-            if (n >= size - 1) n = size - 2;
-            if (n < 0) n = 0;
-            return getNthConnector(n, node,ref curr);
-        }
-
-        DNAConnector getNthConnector(int n, DNATreeNodeBase node, ref int curr)
-        {
-            for (int i = 0; i < node.Children.Count; i += 1)
-            {
-                DNAConnector child = node.Children[i];
-                var next = getNthConnector(n, child.connectedChild, ref curr);
-                if (next != null)
-                {
-                    return next;
-                }
-                curr += 1;
-            }
-            return null;
-        }
-        public DNATreeNodeBase GetRandomLeafNode()
-        {
-            List<DNATreeNodeBase> leaves = new List<DNATreeNodeBase>();
-            DNATreeNodeBase root = TreeRoot;
-            getLeafNodeList(root, ref leaves);
-            return leaves.GetRandomMember();
-        }
-
-        void getLeafNodeList(DNATreeNodeBase node, ref List<DNATreeNodeBase> list)
-        {
-            if (node.Children.Count == 0) list.Add(node);
-            else
-            {
-                foreach (var child in node.Children)
-                {
-                    getLeafNodeList(child.connectedChild, ref list);
+        public DNABase this[int i] {
+            get => GetNthNode(i);
+            set {
+                while (i >= DNA.Count) {
+                    DNA.Add(RandomTreeNodeCreator.CreateRandomNode());
                 }
             }
         }
-
-        public DNATreeNodeBase GetRandomNode()
+        DNABase GetNthNode(int n)
         {
-            List<DNATreeNodeBase> nodes = new List<DNATreeNodeBase>();
-            if (this.TreeRoot == null) return null;
-            getNodeList(this.TreeRoot, ref nodes);
-            return nodes.GetRandomMember();
+            if (DNA.Count == 0) return null;
+            return DNA[n % DNA.Count];
+        }
+        public DNABase GetRandomNodeInRange(int startIndex = 0, int Count = -1)
+        {
+            return DNA.GetRandomMember(startIndex, Count);
         }
 
-        void getNodeList(DNATreeNodeBase node, ref List<DNATreeNodeBase> list)
+        public void AddNodeAtIndex(int index, DNABase node)
         {
-            list.Add(node);
-            foreach (var child in node.Children)
+            if (index < 0)
             {
-                getNodeList(child.connectedChild, ref list);
+                index = 0;
             }
+            if (index >= DNA.Count)
+            {
+                DNA.Add(node);
+            } else
+            {
+                DNA.Insert(index, node);
+            }
+        }
+
+        public DNABase RemoveNodeAtIndex(int index)
+        {
+            if (index < 0) index = 0;
+            if (index >= Size) index = Size - 1;
+            var result = DNA[index];
+            DNA.RemoveAt(index);
+            return result;
         }
     }
 }

@@ -119,6 +119,7 @@
     <Compile Include="SoundMakers\SoundUtilities\WavePlayer.cs" />
     <Compile Include="SoundMakers\SpecificSounds\WeirdWave1.cs" />
     <Compile Include="SoundMakers\SpecificSounds\WhiteNoiseCreator.cs" />
+    <Compile Include="Utilities\Syllable.cs" />
     <Compile Include="Waviate\GUI\IndividualSoundController.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -147,8 +148,10 @@
     <Compile Include="Waviate\GUI\WaviateSplashScreen.Designer.cs">
       <DependentUpon>WaviateSplashScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Waviate\Model\Core\DNAConnectorBackup.cs" />
     <Compile Include="Waviate\Model\Core\DNAConnector.cs" />
     <Compile Include="Waviate\Model\Core\DNAMutator.cs" />
+    <Compile Include="Waviate\Model\Core\DNABase.cs" />
     <Compile Include="Waviate\Model\Core\DNATreeNodeBase.cs" />
     <Compile Include="Waviate\Model\Core\RandomNodeCreator.cs" />
     <Compile Include="Waviate\Model\Core\SoundCreature.cs" />
@@ -190,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Pictures\WaviateLogo.png" />
+    <None Include="Pictures\WaviateLogo.gif" />
+    <None Include="Resources\WaviateLogo.png" />
+    <None Include="Resources\WaviateLogo1.gif" />
     <Content Include="Waviate\WaviateLogo.png" />
   </ItemGroup>
   <ItemGroup>

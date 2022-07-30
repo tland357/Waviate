@@ -18,30 +18,34 @@ namespace Waviate.GUI
         {
             InitializeComponent();
             KillOrSaveChanged(KillSave, null);
-            double[] d = new double[512];
-            Random r = new Random();
-            for (int i = 0; i < d.Length; i++)
-            {
-                d[i] = (r.Next() % 2 == 0 ? 1 : -1) * r.NextDouble();
-            }
-            waveViewer1.DisplayData(SoundCreator, 1);
             this.BackColor = WaviateColors.WavMidnight;
             SaveAudio.BackColor = WaviateColors.WavDarkPurp;
 
         }
         SoundCreature soundcreature;
+
         public SoundCreature SoundCreator
         {
             get { return soundcreature; }
             set
             {
-                soundcreature = value;
-                waveViewer1.DisplayData(value, EvolutionAlgorithm.Volume);
-                soundcreature.OnDirtied += Repaint;
-                Repaint();
+                if (soundcreature != null)
+                {
+                    //Cleanup after last creature
+                }
+                if (value != null)
+                {
+                    soundcreature = value;
+                    waveViewer1.DisplayData(value, EvolutionAlgorithm.Volume);
+                    soundcreature.OnDirtied += Repaint;
+                    Repaint();
+                }
             }
         }
-
+        void UpdateNumber(SoundCreature creature)
+        {
+            label1.Text = creature?.Lifetime.ToString() ?? "0";
+        }
         private void KillOrSaveChanged(object sender, EventArgs e)
         {
             var check = sender as CheckBox;
@@ -62,11 +66,13 @@ namespace Waviate.GUI
         public void Repaint(object sender = null, EventArgs e = null)
         {
             waveViewer1.Invalidate();
+            
         }
 
         private void SaveAudio_Click(object sender, EventArgs e)
         {
             SaveAudio.Checked = false;
+            saveFileDialog1.FileName = String.Format("{0}_{1}", SoundCreator.FirstName, SoundCreator.LastName);
             var result = saveFileDialog1.ShowDialog();
             if (result == DialogResult.OK && SoundCreator != null)
             {
@@ -77,6 +83,7 @@ namespace Waviate.GUI
         private void PlayAudio_Click(object sender, EventArgs e)
         {
             if (SoundCreator == null) return;
+            Repaint();
             PlayAudio.Checked = false;
             string exeurl = System.Reflection.Assembly.GetEntryAssembly().Location;
             StringBuilder url = new StringBuilder(exeurl);
@@ -89,6 +96,25 @@ namespace Waviate.GUI
             string saveURL = url.ToString();
             AudioFileWriter.Create(SoundCreator, saveURL);
             AudioPlaygroundConsole.WavePlayer.PlayAudio(saveURL);
+            
+        }
+
+        private void waveViewer1_Paint(object sender, PaintEventArgs e)
+        {
+            label1.Text = String.Format("Generations Alive: {0}", SoundCreator.Lifetime);
+            NameShower.Text = String.Format("{0} {1}", SoundCreator.FirstName, SoundCreator.LastName);
+        }
+
+        private void Deleter_Click(object sender, EventArgs e)
+        {
+            Deleter.Checked = false;
+            if (SoundCreator != null)
+            {
+                EvolutionAlgorithm.CurrentPopulation.Remove(SoundCreator);
+                if (EvolutionAlgorithm.CurrentPopulation.Count == 0) EvolutionAlgorithm.Reset();
+                var wavApp = WaviateApp.ActiveForm as WaviateApp;
+                wavApp.NextGenControllers(EvolutionAlgorithm.CurrentPopulation, null);
+            }
         }
     }
 }

@@ -7,11 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Waviate
 {
     public partial class WaviateSplashScreen : Form
     {
+        public bool ShouldOpen;
         public WaviateSplashScreen()
         {
             InitializeComponent();
@@ -76,11 +78,31 @@ namespace Waviate
 
         private void WaviateSplashScreen_Load(object sender, EventArgs e)
         {
-            for (int i = 0; i < 5; i += 1)
-            {
-                HueShiftImage();
-            }
+            
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Thread.Sleep(4000);
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+        }
+
+        private void pictureBox1_LoadCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
             Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            WaviateApp app = new WaviateApp();
+            app.ShowDialog();
         }
     }
 }

@@ -10,9 +10,9 @@ namespace Waviate.Model
     {
         public DNATreeNodeBase()
         {
-            Children = new List<DNAConnector>();
+            Children = new List<DNAConnectorTree>();
         }
-        public List<DNAConnector> Children;
+        public List<DNAConnectorTree> Children;
         public int Size {
             get {
                 int size = 0;
@@ -32,8 +32,8 @@ namespace Waviate.Model
             }
             return result;
         }
-        public DNAConnector Parent;
-        public DNATreeNodeBase DeepCopy(DNAConnector parent = null)
+        public DNAConnectorTree Parent;
+        public DNATreeNodeBase DeepCopy(DNAConnectorTree parent = null)
         {
             var replicated = (DNATreeNodeBase)MemberwiseClone();
             replicated.Parent = parent;
